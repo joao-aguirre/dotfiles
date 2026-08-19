@@ -42,6 +42,6 @@ vim.api.nvim_set_hl(0, "Whitespace", { fg = "#323232", bg = "NONE" })
 -- Set colors for NonText (eob, wrapped lines)
 vim.api.nvim_set_hl(0, "NonText", { fg = "#323232", bg = "NONE" })
 
--- Show the ruler lines at columns 80 and 100.
-vim.opt.colorcolumn = "80,100"
+-- Show the ruler lines at columns 81 and 101.
+vim.opt.colorcolumn = "81,101"
 vim.api.nvim_set_hl(0, "ColorColumn", {bg = "#323232"}) 
