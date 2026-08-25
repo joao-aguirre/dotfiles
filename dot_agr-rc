@@ -1,0 +1,115 @@
+#    __       __   _ __
+#  /'__`\   /'_ `\/\`'__\
+# /\ \L\.\_/\ \L\ \ \ \/
+# \ \__/.\_\ \____ \ \_\
+#  \/__/\/_/\/___L\ \/_/
+#             /\____/
+#             \_/__/
+
+# Personal settings.
+echo "Loading personal settings."
+
+# Adjust bash history sizes.
+HISTSIZE=5000
+HISTFILESIZE=10000
+
+# `bat`
+export MANPAGER="sh -c 'sed -u -e \"s/\\x1B\[[0-9;]*m//g; s/.\\x08//g\" | batcat -p -lman'"
+alias bathelp='bat --plain --language=help'
+help() {
+    "$@" --help 2>&1 | bathelp
+}
+
+# `fzf`
+eval "$(fzf --bash)"
+export FZF_COLORS=" \
+    --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 \
+    --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
+    --color=marker:#b4befe,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 \
+    --color=selected-bg:#45475a \
+    --color=border:#6c7086,label:#cdd6f4"
+export FZF_DEFAULT_OPTS=" \
+    ${FZF_COLORS}
+    --multi \
+    --popup 75% \
+    --preview '[[ -d {} ]] \
+    && lsd --almost-all --color always --icon always --icon-theme unicode \
+    --no-symlink --group-directories-first --tree --depth 1 {} \
+    || bat --color=always --style=numbers --line-range=:500 {}'"
+# CTRL+T command options.
+# The CTRL+T command is used to list/find folders and files.
+# Start the file and directory widgets without dotfiles. Press Ctrl-H inside
+# either picker to toggle hidden entries.
+export FZF_CTRL_T_COMMAND=" \
+    fd --no-ignore --follow --type f --type d \
+    --exclude .git --exclude node_modules"
+export FZF_CTRL_T_OPTS=" \
+    --bind 'ctrl-h:transform:
+      if [ \"\$FZF_PROMPT\" = \"*> \" ]; then
+        echo \"reload(fd --no-ignore --follow --type f --type d \
+            --exclude .git --exclude node_modules)+change-prompt(> )\"
+      else
+        echo \"reload(fd --hidden --no-ignore --follow --type f --type d \
+            --exclude .git --exclude node_modules)+change-prompt(*> )\"
+      fi'"
+# CTRL+R command options.
+# CTRL+R uses `fzf` to search the command history.
+export FZF_CTRL_R_OPTS=" \
+    ${FZF_COLORS}
+    --popup 50% \
+    --preview ''"
+# ALT+C command options.
+# The ALT+C comamnd shows/finds folders only.
+export FZF_ALT_C_COMMAND=" \
+    fd --no-ignore --follow --type d --exclude .git --exclude node_modules"
+export FZF_ALT_C_OPTS=" \
+    --bind 'ctrl-h:transform:
+      if [ \"\$FZF_PROMPT\" = \"*> \" ]; then
+        echo \"reload(fd --no-ignore --follow --type d \
+            --exclude .git --exclude node_modules)+change-prompt(> )\"
+      else
+        echo \"reload(fd --hidden --no-ignore --follow --type d \
+            --exclude .git --exclude node_modules)+change-prompt(*> )\"
+      fi'"
+
+# `keepassxc`
+alias kpc="keepassxc-cli $@"
+
+# `llvm`
+export PATH=${PATH}:${HOME}/apps/llvm-22.1.8-linux-x64/bin
+
+# `lsd`
+alias ls="lsd --icon-theme unicode"
+alias la="lsd --all --long --header --human-readable --group-directories-first --icon-theme unicode"
+
+# `nnn`
+source ${HOME}/.config/nnn/misc/quitcd/quitcd.bash_sh_zsh
+export NNN_FIFO="${XDG_RUNTIME_HOME:-/tmp}/nnn.fifo"
+export NNN_PLUG="p:preview-tui"
+export NNN_PREVIEWIMGPROG="chafa --scale=max --symbols=braille --colors=full --work=9 --margin-bottom=0"
+export NNN_SPLITSIZE=65
+export NNN_COLORS="1234"
+## nnn sync subshell $PWD (https://github.com/jarun/nnn/wiki/Basic-use-cases#sync-subshell-pwd)
+nnn_cd()
+{
+    if ! [ -z "$NNN_PIPE" ]; then
+        printf "%s\0" "0c${PWD}" > "${NNN_PIPE}" !&
+    fi
+}
+trap nnn_cd EXIT
+
+# `oh-my-posh`
+eval "$(${HOME}/.local/bin/oh-my-posh init bash --config ${HOME}/.cache/oh-my-posh/themes/agr-prompt.omp.json)"
+
+# `zed`
+alias zed="MESA_VK_WSI_DEBUG=sw WAYLAND_DISPLAY='' zed"
+
+# `zoxide`
+export _ZO_FZF_OPTS=" \
+--color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 \
+--color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
+--color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8 \
+--popup 75% \
+--preview 'lsd --almost-all --color always --icon always --icon-theme unicode \
+--no-symlink --group-directories-first --tree --depth 1 -- {2..}'"
+eval "$(zoxide init bash)"
