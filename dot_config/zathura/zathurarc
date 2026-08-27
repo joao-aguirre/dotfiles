@@ -1,0 +1,6 @@
+# Set the system clipboard as the default clipboard to paste and copy to.
+set selection-clipboard clipboard
+
+# Activate synctex navigation from Zathura back to the editors.
+set synctex true
+set synctex-editor-command "texlab inverse-search -i %{input} -l %{line}"
